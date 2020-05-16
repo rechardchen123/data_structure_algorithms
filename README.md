@@ -452,7 +452,45 @@ public class Insertion{
 **插入排序的C++代码实现：**
 
 ```c++
+#include <iostream>
+#include <vector>
 
+using namespace std;
+
+void exch(std::vector<int> &a, int i, int j)
+{
+    int temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
+}
+
+void insert_sort(std::vector<int> &a)
+{
+    for (int i = 1; i < a.size(); i++)
+    {
+        for (int j = i; j > 0; j--)
+        {
+            if (a[j - 1] - a[j] > 0)
+            {
+                exch(a, j - 1, j);
+            }
+            else
+                break;
+        }
+    }
+}
+
+int main(int argc, char **argv)
+{
+    vector<int> a = {4, 6, 8, 7, 9, 2, 10, 1};
+    insert_sort(a);
+    cout << "The sequence after the insert sort:" << endl;
+    for (int i = 0; i < a.size(); i++)
+    {
+        cout << a.at(i) << " ";
+    }
+    return 0;
+}
 ```
 
 
@@ -852,4 +890,311 @@ int main()
 **归并排序的缺点**
 
 需要申请额外的数组空间，导致空间复杂度上升，是典型的以空间换时间的操作。
+
+## 2.3 快速排序 
+
+快速排序是对冒泡排序的一种改进。基本思想是：通过一趟排序将要排序的数据分割成独立的两个部分，其中一个部分的所有数据都比另外一个部分的所有数据都要小，然后再按照次方法对着两部分数组分别进行快速排序，整个排序国城可以递归进行，从而达到整个数据变成有序序列。
+
+**需求：**
+
+排序前：{6，1，2，7，9，3，4，5，8}
+
+排序后：{1，2，3，4，5，6，7，8，9}
+
+**排序原理：**
+
+1. 首先设定一个分界值，通过该分界值将数组分成左右两个部分；
+2. 将大于或等于分界值的数据放到数组右边，小于分界值的数据放到数组的左边。此时左边部分中各元素都小于或等于分界值，而右边部分中各元素都大于或等于分界值；
+3. 然后，左边和哟便的数据可以独立排序，对于左侧的数组数据，又可以去一个分界值，将该部分数据分成左右两个部分，同样再左边放置较小值，再右边放置较大值，右侧的数据一次类似处理；
+4. 重复上述过程，可以看出，这是一个递归的定义，通过递归将左侧部分排好序后，再递归排序右侧部分，当左侧和右侧两个部分的数据排序完成后，整个数组的排序也就完成了。
+
+![image-20200516202048758](README.assets/image-20200516202048758.png)
+
+**快速排序API设计：**
+
+| 类名     | Quick                                                        |
+| -------- | ------------------------------------------------------------ |
+| 构造方法 | Quick(): 创建Quick对象                                       |
+| 成员方法 | 1.public static void sort(Comparable [] a):对数组内的元素进行排序<br />2.private static void sort(Comparable[] a, int lo, int hi):对数组a中从索引lo到hi之间的元素进行排序<br />3.public static int partition(Comparabel[] a, int lo, int hi):对数组a中，从索引lo到索引hi之间的元素进行分组，并返回分组界限对应的索引<br />4.private static boolean less(Comparable v, Comparable w):判断v是否小于w<br />5.private static void exch(Comparable[] a, int i, int j):交换a数组中，索引i和索引j |
+
+**切分原理：**
+
+把一个数组切分成两个子数组的基本思想：
+
+1. 找一个基准值，用两个指针分别指向数组的头部和尾部；
+2. 先从尾部向头部开始搜索一个比基准值小的元素，搜索到即停止，并记录指针的位置；
+3. 再从头部向尾部开始搜索一个比基准值大的元素，搜索到即停止，并记录指针的位置；
+4. 交换当前左边指针的位置和右边指针位置的元素；
+5. 重复2，3，4步骤，直到左边指针的值大于右边指针的值停止。
+
+![image-20200516204502973](README.assets/image-20200516204502973.png)
+
+![image-20200516204840540](README.assets/image-20200516204840540.png)
+
+![image-20200516205039450](README.assets/image-20200516205039450.png)
+
+![image-20200516205209292](README.assets/image-20200516205209292.png)
+
+
+
+**快速排序的Java代码实现：**
+
+```java
+public class Quick{
+    //比较v元素是否小于w元素
+    private static boolean less(Comparable v, Comparable w){
+        return v.compareTo(w) < 0;
+    }
+    
+    //数组元素i和j交换位置
+    private static void exch(Comparable[] a, int i, int j) {
+        Comparable t = a[i];
+        a[i] = a[j];
+        a[j] = t;
+    }
+    
+    //对数组内的元素进行排序
+    public static void sort(Comparable[] a){
+        int lo = 0;
+        int hi = a.length - 1;
+        sort(a, lo, hi);
+    }
+    
+    //对数组a中从索引lo到索引hi之间的元素进行排序
+    private static void sort(Comparable [] a, int lo, int hi) {
+        //安全性校验
+        if(hi <= lo) return;
+        
+        //需要对数组中lo索引到hi索引处的元素进行分组(左子组和右子组);
+        int partition = partition(a, lo, hi); //返回的是分组的分界值所在的索引
+        
+        //让左子组有序
+        sort(a, lo, partition-1);
+        
+        //让右子组有序
+        sort(a, partition+1, hi);
+    }
+    //对数组中从索引lo到hi之间的元素进行分组，并返回分组界限对应的索引
+    public static int partition(Comparable [] a, int lo, int hi) {
+        //确定分界值
+        Comparable key = a[lo];
+        //定义两个指针，分别指向切分元素的最小索引处和最大索引处的下一个位置
+        int left = lo;
+        int right = hi + 1;
+        
+        //切分
+        while(true){
+            
+            //先从右往左扫描，移动right指针，找到一个比分界值小的元素，停止
+            while(less(key, a[--right])) {
+                if(right == lo) break;
+            }
+            //再从左往右扫描，移动left指针，找到一个比分界值大的元素，停止
+            while(less(a[++left], left)) {
+                if(left == hi) break;
+            }
+            //判断left>=right,如果是，则证明元素扫描完毕，结束循环，否则，继续交换
+            if(left >= right) break;
+            else{
+                exch(a, left, right);
+            }
+        }
+        //交换分界值
+        exch(a, lo, right);
+        
+        return right;
+    }
+    
+}
+```
+
+**快速排序的C++代码实现：**
+
+```c++
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+class Quick
+{
+private:
+    //比较两个元素的大小
+    static bool Less(int v, int w)
+    {
+        if (v - w < 0)
+            return true;
+    }
+
+    //数组元素i，j交换位置
+    static void exch(vector<int> &a, int i, int j)
+    {
+        int temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+    }
+
+    //对数组a中从索引lo到索引hi之间的元素进行排序
+    static void Sort(vector<int> &a, int lo, int hi)
+    {
+        //安全性校验
+        if (hi <= lo)
+            return;
+
+        //需要对数组中lo索引到hi索引的元素进行分组
+        int part = partition(a, lo, hi); //返回的是分组的分界值所在的索引
+
+        //递归，让左子组有序
+        Sort(a, lo, part - 1);
+
+        //让右子组有序
+        Sort(a, part + 1, hi);
+    }
+
+public:
+    //对数组内的元素进行排序
+    static void Sort(vector<int> &a)
+    {
+        int lo = 0;
+        int hi = a.size() - 1;
+        Sort(a, lo, hi);
+    }
+
+    //对数组中从索引lo到hi之间的元素进行分组，并返回分组界限对应的索引
+    static int partition(vector<int> &a, int lo, int hi)
+    {
+        //确定分界值
+        int key = a[lo];
+
+        //定义两个指针，分别指向切分元素的最小索引处和最大索引处的下一个位置
+        int left = lo;
+        int right = hi + 1;
+
+        //切分
+        while (true)
+        {
+
+            //先从右往左扫描，移动right指针，找到一个比分界值小的元素，停止
+            while (Less(key, a[--right]))
+            {
+                if (right == lo)
+                    break;
+            }
+
+            //再从左往右扫描，移动left指针，找到一个比分界值大的元素，停止
+            while (Less(a[++left], key))
+            {
+                if (left == hi)
+                    break;
+            }
+
+            //判断left >= right, 则证明元素扫描完毕，结束循环，否则继续切分
+            if (left >= right)
+                break;
+            else
+            {
+                exch(a, left, right);
+            }
+        }
+        //交换分界值
+        exch(a, lo, right);
+        return right;
+    }
+};
+
+int main()
+{
+    vector<int> a = {6, 1, 2, 7, 9, 3, 4, 5, 8};
+    Quick::Sort(a); //C++中只有静态成员函数才可以直接被调用
+    for (int i = 0; i < a.size(); i++)
+    {
+        cout << a[i] << " ";
+    }
+    return 0;
+}
+```
+
+**快速排序和归并排序的区别：**
+
+![image-20200516210318458](README.assets/image-20200516210318458.png)
+
+
+
+**快速排序的时间复杂度分析：**
+
+快速排序的一次切分从两头开始交替搜索，直到left和right重合，因此，一次切分算法的时间复杂度为`O(n)`，但整个快速排序的时间复杂度和切分的次数相关。
+
+最优情况：每次切分选择的基准数字刚好将当前序列等分
+
+![image-20200516210551663](README.assets/image-20200516210551663.png)
+
+如果我们把数组的切分看成一个树，那么共切分`logn`次，最优情况下的时间复杂度为`O(nlogn)`.
+
+最坏情况：每次切分选择的基准数字是当前最大数或者最小数，这使得每次切分都有一个子组，那么的切分n次，最坏情况下，快速排序的时间复杂度为`O(n^2)`
+
+![image-20200516211053451](README.assets/image-20200516211053451.png)
+
+
+
+平均情况下：每次切分下，时间复杂度为`O(nlongn)`
+
+
+
+## 2.4 排序的稳定性
+
+**稳定性的定义：**数组arr中有若干元素，若A元素和B元素相等，并且A元素在B元素前面，如果使用某种排序算法排序后，能够保证A元素依然在B元素的前面，则该算法是稳定的。
+
+![image-20200516215045186](README.assets/image-20200516215045186.png)
+
+常见算法的稳定性：
+
+冒泡排序是稳定的
+
+选择排序是不稳定的排序算法
+
+插入排序是稳定的排序算法 
+
+希尔排序是不稳定的排序算法
+
+归并排序是稳定的排序算法
+
+快速排序是不稳定的排序算法
+
+
+
+# 线性表
+
+线性表是最基本，最简单也是最常用的一种数据结构，一个线性表是n个具有相同特性的数据元素的有限序列。
+
+前驱元素：若A元素在B元素前面，则称A为B的前驱元素
+
+后继元素：若B元素在A元素的后面，则称B为A的后继元素
+
+**线性表的特征：** 数据之间具有一种“一对一”的逻辑关系
+
+1. 第一个数据元素没有前驱，这个数据元素被成为头结点；
+2. 最后一个元素没有后继，这个数据元素称为尾结点；
+3. 除了第一个元素和最后一个元素外，其他元素有且仅有一个前驱结点和一个后继。
+
+**线性表的分类：**
+
+线性表中数据存储的方式可以是顺序存储，也可以是链式存储，按照存储方式不同，可以包线性表分为顺序表和链表。
+
+## 1.1 顺序表
+
+顺序表是在计算机内存中以数组的形式保存的线性表，线性表的顺序存储是指用一组地址连续的存储单元，一次存储线性表中的各个元素，使得线性表在逻辑结构上相邻的数据元素存储在相邻的物理存储单元中。
+
+![image-20200516220649693](README.assets/image-20200516220649693.png)
+
+### 1.1.1 顺序表的实现
+
+**顺序表的API设计：**
+
+| 类名     | SequenceList<T>                                              |
+| -------- | ------------------------------------------------------------ |
+| 构造方法 | SequenceList(int capacity):创建容量为capacity的SequenceList 对象 |
+| 成员方法 | 1.public void clear():空置线性表<br />2.public boolean isEmpty():判断线性表是否为空，是返回true，否则返回false<br />3.public int length(): 获取线性表中元素的个数<br />4.public T get(int i): 读取并返回 线性表中的第i个元素的值<br />5.public void insert(int i, T t):在线性表的第i个元素的位置之前插入一个值为t的数据元素<br />6.public void insert(T t):向线性表中添加一个元素t<br />7.public T remove(int i):删除并返回线性表中第i个数据元素<br />8.public int indexOf(T t):返回线性表中首次出现的指定的数据元素的位序号，若不存在返回-1 |
+| 成员变量 | 1.private T[] eles:存储元素的数组<br />2.private int N:当前线性表的长度 |
+
+
 
