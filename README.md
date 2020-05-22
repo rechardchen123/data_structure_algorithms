@@ -4,7 +4,7 @@
 
 对时间和空间两个维度去分析
 
-## 算法的时间复杂度分析
+# 1. 算法的时间复杂度分析
 
 1. 事后分析估算方法
 
@@ -65,7 +65,7 @@ public static void main(String [] args){
 
 ![image-20200511171612901](./README.assets/image-20200511171612901.png)
 
-### 函数渐进增长
+## 1.1 函数渐进增长
 
 概念：给定两个函数`f(n)`和`g(n)`， 如果存在一个整数`N`, 使得对于所有的`n>N`，`f(n)`总是比`g(n)`大，则`f(n)`的增长渐进快于`g(n)`。
 
@@ -79,11 +79,7 @@ public static void main(String [] args){
 
 **算法函数中n最高次幂越小，算法效率越高**
 
-
-
-
-
-### 算法时间复杂度 大O表示法
+## 1.2 算法时间复杂度 大O表示法
 
 执行次数=执行时间
 
@@ -115,9 +111,7 @@ public static void main(String [] args){
 
 ![image-20200511210343843](./README.assets/image-20200511210343843.png)
 
-
-
-### 函数调用的时间复杂度分析
+## 1.3 函数调用的时间复杂度分析
 
 ```java
 public static void main(String [] args){
@@ -139,7 +133,7 @@ public static void main(String [] args){
 
 ![image-20200511211012421](./README.assets/image-20200511211012421.png)
 
-## 算法的空间复杂度分析
+## 1.4 算法的空间复杂度分析
 
 基本数据类型的内存占用：
 
@@ -157,13 +151,13 @@ public static void main(String [] args){
 
 
 
-# 排序算法
+# 2. 排序算法
 
-# 1. 简单排序
+# 2.1 简单排序
 
 构造方法和成员方法 
 
-## 1.1 冒泡排序(Bubble sort)
+## 2.1.1 冒泡排序(Bubble sort)
 
 冒泡排序是一种简单的排序算法
 
@@ -270,7 +264,7 @@ int main(int argc, char** argv){
 
 
 
-## 1.2 选择排序
+## 2.1.2 选择排序
 
 需求：
 
@@ -383,9 +377,9 @@ int main(int argc, char** argv){
 
 时间复杂度为`O(N^2);`
 
-### 
 
-## 1.3 插入排序
+
+## 2.1.3 插入排序
 
 插入排序（insertion sort）是一种简单直观且稳定的排序算法。
 
@@ -513,11 +507,11 @@ int main(int argc, char **argv)
 
 则时间复杂度为：`O(N^2)`
 
-# 2. 高级排序
+# 2.2 高级排序
 
 冒泡排序，选择排序和插入排序的时间复杂度都是平方阶，随着数据输入的增大，时间成本急剧上升，这些方法不可能用于解决大规模的排序问题。高级排序可以大规模的减小时间消耗，希尔排序，归并排序，快速排序等。
 
-## 2.1 希尔排序
+## 2.2.1 希尔排序
 
 希尔排序是插入排序的一种，又叫“缩小增量排序”，是插入排序算法的一种更高效的改进版本。
 
@@ -659,9 +653,9 @@ int main()
 
 
 
-## 2.2 归并排序
+## 2.2.2 归并排序
 
-### 2.2.1 递归算法
+### 2.2.2.1 递归算法
 
 **定义：**
 
@@ -682,7 +676,7 @@ public void show(){
 
 在递归中，不能无线的调用自己，必须要有边界条件，能够让递归结束，因为每一次递归调用都会在栈内开辟新的空间，如果递归层级太深，很容易造成栈的内存溢出。
 
-### 2.2.2 归并排序
+### 2.2.2.2 归并排序
 
 归并排序是建立在归并操作上的一种算法，该算法采用分治策略。
 
@@ -891,7 +885,7 @@ int main()
 
 需要申请额外的数组空间，导致空间复杂度上升，是典型的以空间换时间的操作。
 
-## 2.3 快速排序 
+## 2.2.3 快速排序 
 
 快速排序是对冒泡排序的一种改进。基本思想是：通过一趟排序将要排序的数据分割成独立的两个部分，其中一个部分的所有数据都比另外一个部分的所有数据都要小，然后再按照次方法对着两部分数组分别进行快速排序，整个排序国城可以递归进行，从而达到整个数据变成有序序列。
 
@@ -1140,7 +1134,7 @@ int main()
 
 
 
-## 2.4 排序的稳定性
+## 2.2.4 排序的稳定性
 
 **稳定性的定义：**数组arr中有若干元素，若A元素和B元素相等，并且A元素在B元素前面，如果使用某种排序算法排序后，能够保证A元素依然在B元素的前面，则该算法是稳定的。
 
@@ -1162,7 +1156,7 @@ int main()
 
 
 
-# 线性表
+# 3. 线性表
 
 线性表是最基本，最简单也是最常用的一种数据结构，一个线性表是n个具有相同特性的数据元素的有限序列。
 
@@ -1180,13 +1174,13 @@ int main()
 
 线性表中数据存储的方式可以是顺序存储，也可以是链式存储，按照存储方式不同，可以包线性表分为顺序表和链表。
 
-## 1.1 顺序表
+## 3.1 顺序表
 
 顺序表是在计算机内存中以数组的形式保存的线性表，线性表的顺序存储是指用一组地址连续的存储单元，一次存储线性表中的各个元素，使得线性表在逻辑结构上相邻的数据元素存储在相邻的物理存储单元中。
 
 ![image-20200516220649693](README.assets/image-20200516220649693.png)
 
-### 1.1.1 顺序表的实现
+### 3.1.1 顺序表的实现
 
 **顺序表的API设计：**
 
@@ -1197,4 +1191,342 @@ int main()
 | 成员变量 | 1.private T[] eles:存储元素的数组<br />2.private int N:当前线性表的长度 |
 
 
+
+**顺序表的C++实现：**
+
+```c++
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+template <class T> //声明一个类模板，虚拟类型名为T
+class SequenceList
+{
+
+private:
+    T *eles; //存储元素的数组
+    int N;    //记录当前顺序表中的元素个数
+
+public:
+    SequenceList(int capacity)
+    {
+        //初始化数组
+        eles = new T[capacity];
+        //初始化长度
+        N = 0;
+    }
+    //将一个线性表置为空表
+    void clear()
+    {
+        N = 0;
+    }
+
+    //判断当前线性表是否为空表
+    bool isEmpty()
+    {
+
+        return N == 0;
+    }
+
+    //获取线性表的长度
+    int length()
+    {
+        return N;
+    }
+
+    //获取指定位置的元素
+    T get(int i)
+    {
+        return eles[i];
+    }
+
+    //向线性表中添加元素T
+    void insert(T t)
+    {
+        eles[N++] = t;
+    }
+
+    //在i元素处插入元素t
+    void insert(int i, T t)
+    {
+        //先把i索引处的元素及其后面的元素依次向后移动一位
+        for (int index = N - 1; index > i; index--)
+        {
+            eles[index] = eles[index - 1];
+        }
+
+        //再把t插入i处
+        eles[i] = t;
+    }
+
+    //删除指定位置i处的元素，并返回该元素/
+    T remove(int i)
+    {
+        //记录索引i处的值
+        T current = eles[i];
+        //让索引i后面的元素依次向前移动一位
+        for (int index = i; index < N - 1; index++)
+        {
+            eles[index] = eles[index + 1];
+        }
+        //元素个数-1
+        N--;
+        return current;
+    }
+
+    //查找t元素处第一次出现的位置
+    int indexOf(T t)
+    {
+        for (int i = 0; i < N; i++)
+        {
+            if (eles[i] == t)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+};
+
+int main()
+{
+    //创建顺序表对象
+    SequenceList<string> s1(10);
+
+    //测试插入
+    s1.insert("k1");
+    s1.insert("k2");
+    s1.insert("k3");
+    s1.insert(1, "k4");
+    cout << "The reuslt of insert:" << s1.get(1) << endl;
+
+    //测试删除
+    string results = s1.remove(0);
+    cout << "the reuslt after removing:" << results << endl;
+
+    //测试清空
+    s1.clear();
+    cout << "the clear results:" << s1.length() << endl;
+    return 0;
+}
+```
+
+
+
+### 3.1.2 顺序表的遍历
+
+一般作为容器存储数据，都需要向外部提供遍历的方式，因此我们需要给顺序表提供遍历的方式。
+
+```c++
+void travelSequenceList()
+    {
+        for (int i = 0; i < N; i++)
+        {
+            cout << "The number " << i + 1 << " value is:" << eles[i] << endl;
+        }
+    }
+```
+
+
+
+### 3.1.3 顺序表的容量可变
+
+1. 添加元素时候的扩容
+
+添加元素时，应该检查当前数组的大小是否能容纳新的元素，如果不能容纳，则需要创建新的容量更大的数组，再这里创建一个是原数组的新数组的两倍容量。
+
+2. 移除元素时：
+
+移除元素时，检查元素数量不足数组容量的1/4，创建原数组的1/2大小的数组。
+
+
+
+
+
+### 3.1.4 顺序表的时间复杂度
+
+![image-20200517011152810](README.assets/image-20200517011152810.png)
+
+
+
+## 3.2 链表
+
+顺序表的查询很快，但是增删的效率比较低，因为每次操作都需要伴随着大量的元素数据移动，这个问题我们可以采用链式存储结构实现。链表是一种物理存储单位上非连续，非顺序的存储结构，其物理结构不能只表示数据元素的逻辑顺序，数据元素的逻辑顺序是通过链表中的指针连接次序实现的。链表由一系列的节点组成，结点可以在运行时动态生成。
+
+**结点设计：**
+
+| 类名     | Node<T>                                        |
+| -------- | ---------------------------------------------- |
+| 构造方法 | Node(T t, Node Next):创建Node对象              |
+| 成员变量 | T item:存储数据<br />Node next: 指向下一个结点 |
+
+**结点类的实现：**
+
+```c++
+/*单链表的结点定义*/
+template<class T>
+struct LinkNode{
+    T item;   //存储元素
+    LinkNode<T> *next; //指向下一个结点
+    LinkNode(const T &item, LinkNode<T> *next=NULL){
+        item = item;
+        next = next;
+    }
+};
+```
+
+
+
+### 3.2.1 单向链表
+
+单向链表是链表的一种，它由多个结点组成，每个结点都有一个数据域和一个指针域组成，数据域用于存储数据，指针域用于指向其后继结点，链表的头结点的数据域不存储数据，指针域指向第一个真正存储数据的结点。
+
+![image-20200521234914983](README.assets/image-20200521234914983.png)
+
+**单向链表API设计**
+
+| 类名       | LinkList<T>                                                  |
+| ---------- | ------------------------------------------------------------ |
+| 构造方法   | LinkList():创建LinkList对象                                  |
+| 成员方法   | 1.public void clear():空置线性表<br />2.public boolean isEmpty():判断线性表是否为空，是返回ture，否返回false<br />3.public int length():获取线性表中元素的个数<br />4.public T get(int i):读取并返回线性表中的第i个元素的值<br />5.public void insert(T t):往线性表添加一个元素<br />6.public void insert(int i, T t):在线性表的第i个元素之前插入一个值为t的数据元素<br />7.public T remove(int i):删除并返回线性表中第i个数据元素<br />8.public int indexOf(T t):返回线性表中首次出现的指定的数据元素的位序号，若不存在，则返回-1. |
+| 成员内部类 | private class Node<T>:结点类                                 |
+| 成员变量   | 1.private Node head;记录首结点<br />2.private int N:记录链表长度 |
+
+**单向链表的C++实现：**
+
+```c++
+template <typename T>
+class SingleLink {
+ private:
+  class Node {
+   public:
+    T item;      //存储数据
+    Node *next;  // Node的next指针
+  };
+
+  Node *head;  //记录头结点
+  int N;       //记录链表的长度
+
+ public:
+  //初始化构造函数
+  SingleLink() {
+    //初始化头结点
+    head = new Node;
+    head->item = 0;
+    head->next = NULL;
+    //初始化元素个数
+    N = 0;
+  }
+  ~SingleLink() { delete head; };
+
+  //清空链表
+  void clear() {
+    head->next = NULL;
+    N = 0;
+  }
+
+  //获取链表的长度
+  int length() { return N; }
+
+  //判断链表是否为空
+  bool isEmpty() { return N == 0; }
+
+  //获取指定位置i处的元素
+  T get(int i) {
+    //通过循环从头结点开始往后找，依次找i次
+    Node *n = head->next;
+
+    for (int index = 0; index < i; index++) {
+      n = n->next;
+    }
+
+    return n.item;
+  }
+
+  //向链表中添加元素t
+  void insert(T t) {
+    //找到当前最后的一个结点
+    Node *n = head;
+
+    while (n->next != NULL) {
+      n = n->next;
+    }
+
+    //创建新结点保存元素T
+    Node *newNode;
+    newNode = new Node;
+    newNode.item = t;
+    newNode->next = NULL;
+
+    //让当前最后一个结点指向新结点
+    n->next = newNode;
+
+    //元素的个数加1
+    N++;
+  }
+
+  //向指定位置i处添加元素t
+  void insert(int i, T t) {
+    //找到i之前的一个结点
+    Node *pre = head;
+
+    for (int index = 0; index <= i - 1; index++) {
+      pre = pre->next;
+    }
+
+    //找到i位置的 结点
+    Node *curr = pre->next;
+
+    //创建新结点，并新结点需要指向原来i位置的结点
+    Node *newNode;
+    newNode = new Node;
+    newNode->item = t;
+    newNode->next = curr;
+
+    //原来i位置的前一个结点指向新结点即可。
+    pre->next = newNode;
+
+    N++;
+  }
+
+  //删除指定位置i处的元素，并返回被删除的元素
+  T remove(int i) {
+    //找到i位置的前一个结点
+    Node *pre = head;
+
+    for (int index = 0; index <= i - 1; index++) {
+      pre = pre->next;
+    }
+    //找到i位置的结点
+    Node *curr = pre->next;
+
+    //找到i位置的下一个结点
+    Node *nextNode = curr->next;
+
+    //前一个结点指向下一个结点
+    pre->next = nextNode;
+    //元素个数-1
+    N--;
+
+    return curr.item;
+  }
+
+  //查找元素t在链表中第一次出现的位置
+  int indexOf(T t) {
+    //遍历链表依次找到每一个结点，取出item和t 比较，如果相同 则找到
+    Node *n = head;
+
+    for (int i = 0; n->next != NULL; i++) {
+      n = n->next;
+
+      if (n.item == t) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+};
+```
 
