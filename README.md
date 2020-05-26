@@ -1530,3 +1530,898 @@ class SingleLink {
 };
 ```
 
+
+
+### 3.2.2 双向链表
+
+双向链表也叫双向表，是链表中的一种，它是多个结点组成，每个结点都由一个数据域和两个指针域组成，数据域用来存储数据，其中一个指针域用来指向其后继结点，另一个指针域用来指向前驱结点。链表的头结点的数据域不存储数据，指向前驱结点的指针域值为null，指向后继结点的指针域指向第一个真正存储数据的结点。
+
+![image-20200526005717376](README.assets/image-20200526005717376.png)
+
+**结点API设计：**
+
+| 类名     | Node<T>                                                      |
+| -------- | ------------------------------------------------------------ |
+| 构造方法 | Node(T t, Node pre, Node next):创建Node对象                  |
+| 成员变量 | T item:存储数据<br />Node next: 指向下一个结点<br />Node pre:指向上一个结点 |
+
+**双向链表API设计：**
+
+| 类名       | TwoWayLinkList<T>                                            |
+| ---------- | ------------------------------------------------------------ |
+| 构造方法   | TwoWayLinkList():创建TwoWayLinkList对象                      |
+| 成员方法   | 1.public void clear()<br />2.public boolean isEmpty()<br />3.public int length()<br />4.public T get(int i)<br />5.public void insert(T t)<br />6.public void insert(int i, T t)<br />7.public T remove(int i)<br />8.public int indexOf(T t)<br />9.public T getFirst()<br />10.public T getLast() |
+| 成员内部类 | private class Node<T>:节点类                                 |
+| 成员变量   | 1.private Node first:记录首结点<br />2.private Node last:记录尾结点<br />3.private int N:记录链表长度 |
+
+**双向链表代码实现：**
+
+```c++
+#include <iostream>
+
+template <typename T>
+struct Node
+{
+    T data;
+    Node<T> *next;
+    Node<T> *prev;
+};
+
+template <typename T>
+class TwoWayLinkList
+{
+private:
+    Node<T> *head; //记录首节点
+    Node<T> *last; //记录尾结点
+    int N;         //链表长度
+
+public:
+    TwoWayLinkList();
+
+    void clear();
+
+    int length();
+
+    bool isEmpty();
+
+    T getFirst(); //获取第一个元素
+
+    T getLast();
+
+    void insert(T t);
+
+    void insert(int i, T t);
+
+    T get(int i);
+
+    void remove(int i);
+
+    int indexOf(T t);
+
+    ~TwoWayLinkList();
+};
+
+template <typename T>
+TwoWayLinkList<T>::TwoWayLinkList()
+{
+    //初始化头结点和尾结点
+    head = NULL;
+    last = NULL;
+    //初始化元素个数
+    N = 0;
+}
+
+template <typename T>
+TwoWayLinkList<T>::~TwoWayLinkList()
+{
+    Node<T> *cur = head;
+    while (cur != NULL)
+    {
+        Node<T> *next = cur->next;
+        delete cur;
+        cur = next;
+        if (cur ! = NULL)
+        {
+            next = next->next;
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+
+template <typename T>
+void TwoWayLinkList<T>::clear()
+{
+    head->next = NULL;
+    last = NULL;
+    N = 0;
+}
+
+template <typename T>
+int TwoWayLinkList<T>::length()
+{
+    return N;
+}
+
+template <typename T>
+bool TwoWayLinkList<T>::isEmpty()
+{
+    return N == 0;
+}
+
+template <typename T>
+T TwoWayLinkList<T>::getFirst()
+{
+    if (isEmpty())
+    {
+        return NULL;
+    }
+    else
+    {
+        return head->next->data;
+    }
+}
+
+template <typename T>
+T TwoWayLinkList<T>::getLast()
+{
+    if (isEmpty())
+        return NULL;
+    else
+    {
+        return last->data;
+    }
+}
+
+template <typename T>
+void TwoWayLinkList<T>::insert(T t)
+{
+    //链表为空
+    if (isEmpty())
+    {
+        //创建新结点
+        Node<T> *newNode = new Node<T>;
+        newNode->data = t;
+        newNode->prev = head;
+        newNode->next = NULL;
+
+        //让新结点称为尾结点
+        last = newNode;
+
+        //让头结点指向尾结点
+        head->next = last;
+    }
+    //如果链表不为空
+    else
+    {
+        Node<T> *oldlast = last;
+        Node<T> *newNode = new Node<T>;
+        newNode->data = t;
+        newNode->prev = oldlast;
+        newNode->next = NULL;
+
+        oldlast->next = newNode;
+        last = newNode;
+    }
+    N++;
+}
+
+template <typename T>
+void TwoWayLinkList<T>::insert(int i, T t)
+{
+    //找到i位置的前一个结点
+    Node<T> *pre = head;
+    for (int index = 0; index < i; index++)
+    {
+        pre = pre->next;
+    }
+
+    //找到i位置的结点
+    Node<T> *curr = pre->next;
+
+    //创建新结点
+    Node<T> *newNode = new Node<T>;
+    newNode->data = t;
+    newNode->prev = pre;
+    newNode->next = curr;
+
+    //让i位置的前一个结点的下一个节点变为新结点
+    pre->next = newNode;
+
+    //让㩻的前一个结点变为新结点
+    curr->next = newNode;
+
+    //元素加1
+    N++;
+}
+
+template <typename T>
+T TwoWayLinkList<T>::get(int i)
+{
+    Node<T> *n = head->next;
+    for (int index = 0; index < i; index++)
+    {
+        n = n->next;
+    }
+    return n->data;
+}
+
+template <typename T>
+int TwoWayLinkList<T>::indexOf(T t)
+{
+    Node<T> *n = head;
+    for (int i = 0; n->next != NULL; i++)
+    {
+        n = n->next;
+        if (n->next == t)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+template <typename T>
+void TwoWayLinkList<T>::remove(int i)
+{
+    //找到i位置的前一个结点
+    Node<T> *pre = head;
+    for (int index = 0; index < i; index++)
+    {
+        pre = pre->next;
+    }
+
+    //找到i位置的结点
+    Node<T> *curr = pre->next;
+    //找到i位置的下一个结点
+    Node<T> *nextNode = curr->next;
+
+    //让i位置的前一个结点的下一个结点变成i位置的下一个结点
+    pre->next = nextNode;
+    //让i位置的下一个结点的上一个几点变为i位置的前一个结点
+    nextNode->prev = pre;
+
+    //元素个数--
+    N--;
+    return curr->data;
+}
+
+```
+
+### 3.2.3 链表的复杂度分析
+
+`get(int i)`每次查询，都需要从链表的头部开始，依次向后查找，随着数据元素的增多，比较的元素越来越多，时间复杂度为`O(n)`.
+
+`insert(int i, T t)`每次插入，需要先找到`i`位置的前一个元素，然后完成插入操作，随着数据元素的增多，查找到的元素越多，时间复杂度为`O(n)`。
+
+`remove(int i)`每一次移除，需要先找到`i`位置的前一个元素，然后完成插入操作，随着数据元素的增多，查找到的元素越多，时间复杂度为`O(n)`。
+
+相比较顺序表，链表的插入和删除的时间复杂度虽然一样，但仍然有很大的优势，因为链表的物理地址不连续，它不需要预先指定存储空间大小，或者在存储过程中涉及到扩容的操作，同时它并没有涉及到元素的交换。
+
+相比较顺序表，链表的查询操作性能较低，因此，如果程序中查询操作过多，建议使用顺序表，增删操作多，建议使用链表。
+
+### 3.2.4 链表反转
+
+单链表反转是面试中的高频题目。
+
+**需求：**
+
+原链表中的数据为：1->2->3->4
+
+反转后的链表数据为4，3，2，1
+
+反转**API**
+
+`public void reverse()`对整个链表反转
+
+`public Node reverse(Node curr)`反转链表中的某个结点`curr`并把反转后的`curr`结点返回
+
+使用递归可以完成反转，递归反转就是从原链表中第一个存储数据的结点开始，一次递归嗲偶哦那个反转的每一个结点，直到最后一个结点反转完毕，整个链表久反转完毕。
+
+![image-20200526174107042](README.assets/image-20200526174107042.png)
+
+**代码：**
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+struct Node
+{
+    int data;
+    Node *next;
+};
+
+void Display(Node *head)
+{
+    if (head == NULL)
+    {
+        cout << "the list is empty." << endl;
+        return;
+    }
+    else
+    {
+        Node *p = head;
+        while (p)
+        {
+            cout << p->data << " ";
+            p = p->next;
+        }
+    }
+    cout << endl;
+}
+
+Node *ReverseList(Node *head)
+{
+    if (head == NULL)
+        return NULL;
+
+    Node *cur = head;
+    Node *pre = NULL;
+    Node *nex = NULL;
+    while (cur->next != NULL)
+    {
+        nex = cur->next;
+        cur->next = pre;
+        pre = cur;
+        cur = nex;
+    }
+
+    cur->next = pre;
+    return cur;
+}
+
+//创建链表
+
+Node *Init(int num)
+{
+    if (num <= 0)
+        return NULL;
+
+    Node *cur = NULL;
+    Node *head = NULL;
+    Node *node = new Node;
+    node->data = 1;
+    head = cur = node;
+    for (int i = 1; i < num; i++)
+    {
+        Node *node = new Node;
+        node->data = i + 1;
+        cur->next = node;
+        cur = node;
+    }
+    cur->next = NULL;
+    return head;
+}
+
+int main()
+{
+    Node *list = NULL;
+    list = Init(10);
+    Display(list);
+    Node *newList = ReverseList(list);
+    Display(newList);
+
+    system("pause");
+    return 0;
+}
+```
+
+
+
+### 3.2.5 快慢指针 
+
+快慢指针是定义两个指针，这两个指针的移动速度一快一慢，以此来制造出自己想要的差值，这个差值可以让我们找到链表上相应的结点，一般情况下，快指针移动的步长为慢指针的两倍。
+
+![image-20200526180433813](README.assets/image-20200526180433813.png)
+
+```c++
+//Define the list 
+struct ListNode{
+    int val;
+    ListNode *next;
+    ListNode(int x ): val(x), next(NULL){}
+};
+
+class Solution{
+    public:
+    	ListNode* middleNode(ListNode* head){
+            ListNode* slow, *fast;
+            slow = fast = head;
+            while(fast && fast->next){
+                slow = slow->next;
+                fast = fast->next->next;
+            }
+ //快慢指针法补充：结束时fast不为空则len为奇数；fast为空则len为偶数  
+//结束时: len为奇数则slow位于(len+1)/2;len为偶数则slow位于len/2+1  
+            return slow;
+        }
+};
+```
+
+### 3.2.6 单向链表是否有环问题
+
+![image-20200526204652371](README.assets/image-20200526204652371.png)
+
+```c++
+typedef struct node{
+    int data;
+    struct node *next;
+}NODE;
+
+bool IsLoop(NODE *head){
+    if(head == NULL)
+        return false;
+    
+    NODE* slow = head->next;
+    if(slow == NULL)
+        return false;
+    
+    Node* fast = slow->next;
+    while(fast != NULL && slow != NULL){
+        if(fast == slow)
+            return true;
+        
+        slow = slow->next;
+        fast = fast->next;
+        if(fast != NULL)
+            fast = fast->next;
+    }
+    return false;
+}
+
+//若单向链表有环，如何找到环的入口结点 
+NODE* MeetingNode(NODE* head){
+    if(head == NULL)
+        return NULL;
+    
+    NODE* slow = head->next;
+    if(slow == NULL)
+        return NULL;
+    NODE* fast = slow->next;
+    while(fast !=NULL && slow !=NULL){
+        if(fast == slow)
+            return fast;
+        slow = slow -> next;
+        fast = fast->next;
+        if(fast != NULL)
+            fast = fast->next;
+    }
+    return NULL;
+}
+
+NODE* EntryNodeOfLopp(NODE* head){
+    NODE* meetingNode = MeetingNode(head); //先找到环中的任一结点 
+    if(meetingNode == NULL)
+        return NULL;
+    
+    int count = 1;  //计算环中的结点数
+    NODE *p = meetingNode;
+    while(p != meetingNode){
+        p = p->next;
+        ++count;
+    }
+    p = head;
+    for(int i= 0; i< count; i++){ //让p从头结点开始，先在链表上向前移动count步
+        p = p->next;
+    }
+    NODE* q = head;  //q从头结点开始
+    while(q! = p){ //p和q以相同的速度向前移动，当q指向环的入口结点时，p已经围绕环走了一圈又回到了入口结点。
+    	q = q->next;
+        p = p->next;
+    }
+    return p;
+}
+```
+
+### 3.2.7 循环链表
+
+循环链表，顾名思义就是链表整体要形成一个圆环状，在单向链表中，最后一个结点的指针为`null`不指向任何结点，因为没有下一个元素了，但要实现循环链表，我们只需要让单向链表的最后一个结点的指针指向头结点即可。
+
+![image-20200526210553840](README.assets/image-20200526210553840.png)
+
+### 3.2.8 约瑟夫问题
+
+![image-20200526211013156](README.assets/image-20200526211013156.png)
+
+![image-20200526211221615](README.assets/image-20200526211221615.png)
+
+![image-20200526211418649](README.assets/image-20200526211418649.png)
+
+
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+struct Node
+{
+    int data;
+    Node *next;
+};
+
+//构造结点数量为n的单向循环链表
+Node *node_create(int n)
+{
+    Node *pRet = NULL;
+
+    if (n != 0)
+    {
+        int n_idx = 1;
+        Node *p_node = NULL;
+
+        //构造n个结点
+        p_node = new Node[n];
+        if (p_node == NULL)
+            return NULL;
+
+        pRet = p_node;
+
+        while (n_idx < n)
+        { //构造循环链表
+            //出书画链表的每个结点从1到n
+            p_node->data = n_idx;
+            p_node->next = p_node + 1;
+            p_node = p_node->next;
+            n_idx++;
+        }
+
+        p_node->data = n;
+        p_node->next = pRet;
+    }
+    
+    return pRet;
+}
+
+int main()
+{
+    Node *pList = NULL;
+    Node *pIter = NULL;
+    int n = 20; //设置总人数为20
+    int m = 6;  //初始报数的上限值
+
+    pList = node_create(n);
+
+    //约瑟夫循环取数
+    pIter = pList;
+
+    m %= n;
+    while (pIter != pIter->next)
+    {
+        for (int i = 1; i < m - 1; i++)
+        {
+            pIter = pIter->next;
+        }
+
+        cout << pIter->next->data << " ";
+
+        //删除第m个节点
+        pIter->next = pIter->next->next;
+        pIter = pIter->next;
+    }
+    cout << pIter->data << endl;
+
+    delete[] pList;
+
+    return 0;
+}
+```
+
+
+
+## 3.3 栈
+
+### 3.3.1 栈的概述
+
+存储货物或供旅客住宿的地方可以引申为仓库 中专站，例如我们在生活中的酒店，在古时候称为客栈，时供旅客休息的地方，旅客可以进客栈休息，休息完毕后离开客栈。
+
+**计算机中的栈**
+
+栈式一种数据结构，一种基于现金后出的数据结构，一种只能在一端进行插入和删除操作的特殊线性表，它按照先进后出的原则存储数据，先进入的数据被压入栈底，最后的数据在栈顶，需要读数据的时候从栈顶开始弹出数据。称数据进入到栈的动作为压栈，数据从栈章出去的动作为弹栈。
+
+![image-20200526213101445](README.assets/image-20200526213101445.png)
+
+### 3.3.2 栈的实现 
+
+栈的API设计
+
+| 类名             | Stack<T>                                                     |
+| ---------------- | ------------------------------------------------------------ |
+| 构造方法         | Stack():创建stack对象                                        |
+| 成员方法         | 1. public bool isEmpty()<br />2.public int size()<br />3.public T pop()<br />4.public void push(T t) |
+| 成员变量         | 1. private Node head<br />2. private int N                   |
+| 成员内部类的实现 | private class Node                                           |
+
+**栈的实现**
+
+```c++
+#ifndef STACK_H
+#define STACK_H
+#include <iostream>
+using namespace std;
+
+template <typename T>
+class MyStack
+{
+public:
+    MyStack(int size);
+    ~MyStack();
+
+    bool stackEmpty(); //判断栈是否为空
+
+    bool stackFull(); //判断栈是否为满
+
+    void clearStack(); //清空
+
+    int stackLength(); //长度
+
+    bool push(T elem); //压栈
+
+    bool pop(T &elem); //弹栈
+
+    bool stackTop(T &elem); //返回栈顶
+
+    void stackTranverse(); //遍历栈
+
+private:
+    T *m_pStack; //栈顶指针
+    int m_iSize; //栈的容量
+    int m_iTop;  //栈顶
+};
+
+template <typename T>
+MyStack<T>::MyStack(int size)
+{
+    m_iSize = size;
+    m_pStack = new T[m_iSize];
+    m_iTop = 0;
+}
+
+template <typename T>
+MyStack<T>::~MyStack()
+{
+    delete m_pStack;
+    m_pStack = NULL;
+}
+
+template <typename T>
+bool MyStack<T>::stackEmpty()
+{
+    return m_iTop == 0 ? true : false;
+}
+
+template <typename T>
+bool MyStack<T>::stackFull()
+{
+    return m_iTop == m_iSize ? true : false;
+}
+
+template <typename T>
+int MyStack<T>::stackLength()
+{
+    return m_iTop;
+}
+
+template <typename T>
+void MyStack<T>::clearStack()
+{
+    m_iTop = 0;
+}
+
+template <typename T>
+bool MyStack<T>::push(T elem)
+{
+    if (stackFull())
+        return false;
+
+    m_pStack[m_iTop++] = elem;
+    return true;
+}
+
+template <typename T>
+bool MyStack<T>::pop(T &elem)
+{
+    if (stackEmpty())
+        return false;
+
+    elem = m_pStack[--m_iTop];
+    return true;
+}
+
+template <typename T>
+bool MyStack<T>::stackTop(T &elem)
+{
+    if (stackEmpty())
+        return false;
+
+    elem = m_pStack[m_iTop - 1];
+    return true;
+}
+
+template <typename T>
+void MyStack<T>::stackTranverse()
+{
+    int i = 0;
+    for (i = 0; i < m_iTop; i++)
+    {
+        cout << m_pStack[i];
+    }
+}
+
+#endif
+```
+
+
+
+### 3.3.3 案例
+
+**括号匹配问题**
+
+**问题描述**
+
+![image-20200526215506099](README.assets/image-20200526215506099.png)
+
+```c++
+#include <iostream>
+#include <stack>
+#include <string>
+using namespace std;
+
+int main()
+{
+    string s;
+    stack<int> mystack;
+    while (cin >> s)
+    {
+
+        string news = s;
+        int len = s.length();
+
+        for (int i = 0; i < len; i++)
+        {
+            //判断输入的字符，进行相应的处理
+            if (s[i] == '(')
+            {
+                mystack.push(i);
+                news[i] = ' ';
+            }
+            else if (s[i] == ')')
+            {
+                if (mystack.empty() == true)
+                    news[i] = '?';
+                else
+                {
+                    mystack.pop();
+                    news[i] = ' ';
+                }
+            }
+            else
+            {
+                news[i] = ' ';
+            }
+        }
+        while (!mystack.empty())
+        {
+            news[mystack.top()] == '$';
+            mystack.pop();
+        }
+        cout << s << endl
+             << news << endl;
+    }
+
+    return 0;
+}
+```
+
+
+
+## 3.4 队列
+
+队列式一种基于先进先出的数据结构，是一种只能在一端进行插入，在另外一端进行删除操作的特殊线性表，它按照先进先出的原则存储数据，先进入的数据，在读取数据时先被读出来。
+
+![image-20200526220727304](README.assets/image-20200526220727304.png)
+
+```c++
+#ifndef QUEUE_H
+#define QUEUE_H
+
+#include <iostream>
+using namespace std;
+
+template <typename T, int num>
+class Queue
+{
+
+private:
+    T arr[num];
+    int front;
+    int rear;
+
+public:
+    Queue()
+    {
+        front = 0;
+        rear = 0;
+    }
+
+    bool isEmpty();
+
+    bool isFull();
+
+    bool push(const T &); //进队列
+
+    bool pop(T &); //出队列
+};
+
+template <typename T, int num>
+bool Queue<T, num>::isEmpty()
+{
+    return front == rear;
+}
+
+template <typename T, int num>
+bool Queue<T, num>::isFull()
+{
+    return front == num;
+}
+
+template <typename T, int num> //进队列 判断队列是否满
+bool Queue<T, num>::push(const T &a)
+{
+    if (isFull())
+        return false;
+
+    arr[front] = a;
+    ++front;
+    return true;
+}
+
+template <typename T, int num>
+bool Queue<T, num>::pop(T &b)
+{
+    if (isEmpty())
+        return false;
+
+    b = arr[rear];
+    ++rear;
+    return true;
+}
+
+#endif
+```
+
+
+
+# 4. 符号表
+
+符号表最重要的一个目的就是将一个键和一个值联系起来，符号表能够将存储的数据元素是一个键和一个值共同组成的键值对数据，我们可以根据键值来查找对应的值。
+
+符号表中，键具有唯一性。
+
+符号表在实力的生活使用场景是非常广泛的，见下表：
+
+![image-20200526222227633](README.assets/image-20200526222227633.png)
+
+## 4.1 符号表的API设计
+
+**结点类**
+
+| 类名     | Node<key, value>                                             |
+| -------- | ------------------------------------------------------------ |
+| 构造方法 | Node(Key key, Value value, Node next)                        |
+| 成员变量 | 1.public Key key;<br />2.public Value value;<br />3.public Node next; |
+
+**符号表**
+
+| 类名     | SymbolTable<key, value>                                      |
+| -------- | ------------------------------------------------------------ |
+| 构造方法 | SymbolTable()                                                |
+| 成员方法 | 1.public Value get(Key key)<br />2.public void put(Key key, Value value)<br />3.public void delete(Key key)<br />4.public int size() |
+| 成员变量 | 1. private Node head;<br />2.private it N                    |
+
+## 4.2 符号表的实现
+
