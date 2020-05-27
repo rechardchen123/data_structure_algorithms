@@ -1,3 +1,5 @@
+
+
 # 算法分析
 
 如何花更少时间和内存去完成任务。
@@ -2424,4 +2426,446 @@ bool Queue<T, num>::pop(T &b)
 | 成员变量 | 1. private Node head;<br />2.private it N                    |
 
 ## 4.2 符号表的实现
+
+```c++
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+const int MAX = 100;
+
+class Node
+{
+    string identifier, scope, type;
+    int lineNo;
+    Node *next;
+
+public:
+    Node()
+    {
+        next = NULL;
+    }
+
+    Node(string key, string value, string type, int lineNo)
+    {
+        this->identifier = key;
+        this->scope = value;
+        this->type = type;
+        this->lineNo = lineNo;
+        next = NULL;
+    }
+
+    void print()
+    {
+        cout << "Identifier's Name:" << identifier
+             << "\nType:" << type
+             << "\nScope: " << scope
+             << "\nLine Number: " << lineNo << endl;
+    }
+
+    friend class SymbolTable;
+};
+
+class SymbolTable
+{
+    Node *head[MAX];
+
+public:
+    SymbolTable()
+    {
+        for (int i = 0; i < MAX; i++)
+        {
+            head[i] = NULL;
+        }
+    }
+
+    int hashf(string id); //hash function
+
+    bool insert(string id, string scope, string Type, int lineno);
+
+    string find(string id);
+
+    bool deleteRecord(string id);
+
+    bool modify(string id, string scope, string Type, int lineno);
+};
+
+//Function to modify an identifier
+bool SymbolTable::modify(string id, string s, string t, int l)
+{
+    int index = hashf(id);
+    Node *start = head[index];
+
+    if (start == NULL)
+        return "-1";
+
+    while (start != NULL)
+    {
+        if (start->identifier == id)
+        {
+            start->scope = s;
+            start->type = t;
+            start->lineNo = l;
+            return true;
+        }
+        start = start->next;
+    }
+    return false; //id not found
+}
+
+// Function to delete an identifier
+bool SymbolTable::deleteRecord(string id)
+{
+    int index = hashf(id);
+    Node *tmp = head[index];
+    Node *par = head[index];
+
+    // no identifier is present at that index
+    if (tmp == NULL)
+        return false;
+
+    // only one identifier is present
+    if (tmp->identifier == id && tmp->next == NULL)
+    {
+        tmp->next = NULL;
+        delete tmp;
+        return true;
+    }
+
+    while (tmp->identifier != id && tmp->next != NULL)
+    {
+        par = tmp;
+        tmp = tmp->next;
+    }
+
+    if (tmp->identifier == id && tmp->next != NULL)
+    {
+        par->next = tmp->next;
+        tmp->next = NULL;
+        delete tmp;
+        return true;
+    }
+    //delete at the end
+    else
+    {
+        par->next = NULL;
+        tmp->next = NULL;
+        delete tmp;
+        return true;
+    }
+    return false;
+}
+
+// Function to find an identifier
+string SymbolTable::find(string id)
+{
+    int index = hashf(id);
+    Node *start = head[index];
+
+    if (start == NULL)
+        return "-1";
+
+    while (start != NULL)
+    {
+        if (start->identifier == id)
+        {
+            start->print();
+            return start->scope;
+        }
+        start = start->next;
+    }
+    return "-1";
+}
+
+// Function to insert an identifier
+bool SymbolTable::insert(string id, string scope, string Type, int lineno)
+{
+    int index = hashf(id);
+    Node *p = new Node(id, scope, Type, lineno);
+
+    if (head[index] == NULL)
+    {
+        head[index] = p;
+        cout << "\n"
+             << id << "inserted";
+
+        return true;
+    }
+    else
+    {
+        Node *start = head[index];
+        while (start->next != NULL)
+            start = start->next;
+
+        start->next = p;
+        cout << "\n"
+             << id << "inserted";
+
+        return true;
+    }
+    return false;
+}
+
+int SymbolTable::hashf(string id)
+{
+    int asciiSum = 0;
+    for (int i = 0; i < id.length(); i++)
+    {
+        asciiSum = asciiSum + id[i];
+    }
+    return (asciiSum % 100);
+}
+
+```
+
+# 5. 树
+
+之前在实现符号的时候，符号不熬的增删查找操作，随着元素个数增多，其耗时也是线性增多的，时间复杂度为`O(n)`为了提高效率，树形结构有助于改善这个局面。
+
+## 5.1 树的基本定义
+
+树是对计算机中一种重要的数据结构，同时使用树这中结构可以描述现实很多的事务。
+
+树是有`n(n>=1)`个哟先结点组成的一个具有层次关系的集合。
+
+![image-20200527220903252](README.assets/image-20200527220903252.png)
+
+树具有如下的特点：
+
+1. 每个结点有零个或多个子结点；
+2. 没有父节点的节点为根节点；
+3. 每个非根节点只有一个父节点；
+4. 每个节点及其后代节点整体可以看作一棵树，成为当前节点的父节点的子树；
+
+## 5.2 树的相关术语
+
+**节点的度**
+
+​	一个节点含有的子树的个数成为该节点的度。
+
+**叶节点**
+
+​	度为0的节点成为叶节点，叶可以叫做终端节点。
+
+**分支节点**
+
+​	度不为0的节点成为分支节点，也可以叫做非终端节点。
+
+**节点的层次**
+
+​	从根节点开始，根节点的层次为1，跟的直接后继层次为2，以此类推
+
+**节点的层序编号**
+
+​	将树中的节点，按照从上层到下层，同层从左到右的次序排列称一个线性序列，把他们编成连续的自然数。
+
+**树的度**
+
+​	树中所有节点的度的最大值 
+
+**树的高度**
+
+​	书中节点的最大层次 
+
+**森林**
+
+​	`m(m>=0)`个互不相交的树的集合，将一棵非空树的根节点删去，树就变成了一个森林，给森林增加一个统一的跟节点，森林变成一棵树。
+
+**孩子节点**
+
+​	一个节点的直接后继节点成为该节点的孩子节点
+
+**双亲结点（父节点）**
+
+​	一个结点的直接前驱成为该结点的双亲结点
+
+**兄弟结点**
+
+​	同一个双亲结点的孩子结点间成为兄弟结点
+
+
+
+## 5.3 二叉树的基本定义
+
+二叉树就是度不超过2的树（每个结点最多有两个子节点）
+
+![image-20200527231524508](README.assets/image-20200527231524508.png)
+
+**满二叉树**
+
+​	一个二叉树，如果每一个层的结点树都达到最大值，则这个二叉树就是满二叉树。
+
+![image-20200527231606152](README.assets/image-20200527231606152.png)
+
+**完全二叉树**
+
+​	叶节点只能出现在最下层和次下层，并且最下面一层的结点都集中在该层最左边的若干位置的二叉树。
+
+![image-20200527231708183](README.assets/image-20200527231708183.png)
+
+## 5.4 二叉查找树的创建
+
+### 5.4.1 二叉树的结点类
+
+根据对图的观察，我们发现二叉树其实就是由一个一个的结点及其之间的关系组成的，按照面向对象的思想，我们设计一个结点类来描述结点。。。
+
+**节点类API设计**
+
+| 类名     | Node<Key, Value>                                             |
+| -------- | ------------------------------------------------------------ |
+| 构造方法 | Node<Key key, Value value, Node* left, Node* right>          |
+| 成员变量 | 1. public Node left<br />2 public Node right<br />3.public Key key<br />4.public Value value |
+
+```c++
+#ifndef BINARYTREE_H
+#define BINARYTREE_H
+#include <iostream>
+#include <queue>
+#include <stdlib.h>
+
+using namespace std;
+
+//二叉树的树节点的定义
+template <class T>
+class TreeNode
+{
+public:
+    T data;
+    TreeNode<T> *leftChild;
+    TreeNode<T> *rightChild;
+    TreeNode()
+    {
+        leftChild = NULL;
+        rightChild = NULL;
+    }
+};
+
+//二叉树这个类的详细定义
+template <class T>
+class BinaryTree
+{
+public:
+    TreeNode<T> *root; //得到根节点
+
+    //二叉树的操作
+public:
+    //前序遍历
+    void PreOrder();
+    void PreOrder(TreeNode<T> *currentNode); //函数重载
+
+    //中序遍历
+    void InOrder();
+    void InOrder(TreeNode<T> *currentNode);
+
+    //后续遍历
+    void PostOrder();
+    void PostOrder(TreeNode<T> *currentNode);
+
+    //层序遍历
+    void LevelOrder();
+    void LevelOrder(TreeNode<T> *currentNode);
+
+    //读取结点
+    void Visit(TreeNode<T> *currentNode);
+}
+
+template <class T>
+void BinaryTree<T>::Visit(TreeNode<T> *currentNode)
+{
+    std::cout << currentNode->data;
+}
+
+//前序遍历的实现
+template <class T>
+void BinaryTree<T>::PreOrder()
+{
+    PreOrder(root);
+}
+
+template <class T>
+void BinaryTre<T>::PreOrder(TreeNode<T> *currentNode)
+{
+    if (currentNode)
+    {
+        //显示当前结点
+        Visit(currentNode);
+
+        //然后访问左节点
+        preOrder(currentNode->lefChild);
+
+        //访问右边的结点
+        PreOrder(currentNode->rightChild);
+    }
+}
+
+//中序遍历
+template <class T>
+void BinaryTree<T>::InOrder()
+{
+    InOrder(root);
+}
+
+template <class T>
+void BinaryTree<T>::InOrder(TreeNode<T> *currentNode)
+{
+    if (currentNode)
+    {
+        InOrder(currentNode->leftChild);
+        Visit(currentNode);
+
+        InOrder(currentNode->rightChild);
+    }
+}
+
+//后序遍历
+template <class T>
+void BinaryTree<T>::PostOrder()
+{
+    PostOrder(root);
+}
+
+template <class T>
+void BinaryTree<T>::PostOrder(TreeNode<T> *currentNode)
+{
+    if (currentNode)
+    {
+        PostOrder(currentNode->leftChild);
+        PostOrder(currentNode->rightChild);
+
+        Visit(currentNode);
+    }
+}
+
+//层序遍历
+template <class T>
+void BinaryTree<T>::LevelOrder()
+{
+    std::queue<TreeNode<T> *> q;
+    TreeNode<T> *currentNode = root;
+
+    while (currentNode)
+    {
+        Visit(currentNode);
+        if (currentNode->leftChild)
+            q.push(currentNode->leftChild);
+
+        if (currentNode->rightChild)
+            q.push(currentNode->rightChild);
+
+        if (q.empty())
+            return;
+
+        currentNode = q.front();
+
+        q.pop();
+    }
+}
+
+#endif
+```
+
+
+
+### 5.4.2 二叉查找树的实现
 
